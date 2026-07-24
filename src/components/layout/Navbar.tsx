@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-slate-950/70 border-b border-cyan-500/20">
@@ -36,9 +37,12 @@ export default function Navbar() {
 
         </ul>
 
-        <button className="bg-cyan-500 hover:bg-cyan-400 text-black px-5 py-2 rounded-xl font-semibold">
-          Dashboard
-        </button>
+        <Link
+  to="/dashboard"
+  className="bg-cyan-500 hover:bg-cyan-400 text-black px-5 py-2 rounded-xl font-semibold"
+>
+  Launch Dashboard
+</Link>
 
       </div>
 
