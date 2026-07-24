@@ -1,70 +1,130 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { Icon } from "leaflet";
-import type { LatLngExpression } from "leaflet";
+import { useEffect } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Circle,
+  useMap,
+} from "react-leaflet";
+import L from "leaflet";
+
 import "leaflet/dist/leaflet.css";
 
-import { pollutionLocations } from "../../data/dashboardData";
+import { incidents } from "../../data/incidents";
+import { useCommandCenter } from "../../context/CommandCenterContext";
 
-const markerIcon = new Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+// Fix Leaflet marker icons
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+L.Icon.Default.mergeOptions({
   iconRetinaUrl:
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   shadowUrl:
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
 });
 
-const center: LatLngExpression = [15.5, 78];
+function FlyToIncident() {
+  const map = useMap();
+
+  const { selectedIncident } = useCommandCenter();
+
+  useEffect(() => {
+    if (!selectedIncident) return;
+
+    map.flyTo(
+      [
+        selectedIncident.latitude,
+        selectedIncident.longitude,
+      ],
+      8,
+      {
+        duration: 2,
+      }
+    );
+  }, [selectedIncident, map]);
+
+  return null;
+}
 
 export default function OceanMap() {
+  const { selectedIncident } = useCommandCenter();
+
   return (
     <MapContainer
-      center={center}
+      center={[20.5937, 78.9629]}
       zoom={5}
       scrollWheelZoom
       style={{
-        height: "100%",
         width: "100%",
-        borderRadius: "16px",
+        height: "100%",
       }}
     >
       <TileLayer
+        attribution="© OpenStreetMap"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution="&copy; OpenStreetMap contributors"
       />
 
-      {pollutionLocations.map((location) => (
+      <FlyToIncident />
+
+      {incidents.map((incident) => (
         <Marker
-          key={location.id}
-          position={[location.lat, location.lng]}
-          icon={markerIcon}
+          key={incident.id}
+          position={[
+            incident.latitude,
+            incident.longitude,
+          ]}
         >
           <Popup>
-            <div className="space-y-2 min-w-[180px]">
-              <h3 className="text-lg font-bold">{location.name}</h3>
+
+            <div className="space-y-2">
+
+              <h3 className="font-bold">
+
+                {incident.title}
+
+              </h3>
 
               <p>
-                <strong>Risk Level:</strong> {location.level}
+
+                {incident.location}
+
               </p>
 
               <p>
-                <strong>Plastic Waste:</strong> {location.waste}
+
+                Severity: {incident.severity}
+
               </p>
 
               <p>
-                <strong>Status:</strong>{" "}
-                {location.level === "High"
-                  ? "⚠️ Immediate Attention"
-                  : location.level === "Medium"
-                  ? "🟡 Monitoring"
-                  : "🟢 Stable"}
+
+                {incident.description}
+
               </p>
+
             </div>
+
           </Popup>
         </Marker>
       ))}
+
+      {selectedIncident && (
+        <Circle
+          center={[
+            selectedIncident.latitude,
+            selectedIncident.longitude,
+          ]}
+          radius={12000}
+          pathOptions={{
+            color: "#22d3ee",
+            fillColor: "#22d3ee",
+            fillOpacity: 0.2,
+          }}
+        />
+      )}
     </MapContainer>
   );
 }

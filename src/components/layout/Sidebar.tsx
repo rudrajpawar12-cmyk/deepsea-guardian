@@ -1,260 +1,269 @@
-import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   LayoutDashboard,
-  Map,
+  Radar,
+  AlertTriangle,
   BrainCircuit,
-  ChartColumn,
-  Bell,
-  Waves,
-  Activity,
-  Menu,
-  X,
+  Ship,
+  FileText,
+  BarChart3,
+  Settings,
+  ShieldCheck,
+  LogOut,
 } from "lucide-react";
 
-import { motion, AnimatePresence } from "framer-motion";
+import {
+  useWorkspace,
+  type Workspace,
+} from "../../context/WorkspaceContext";
 
-const menuItems = [
+import { useAuth } from "../../context/AuthContext";
+
+const menu: {
+  id: Workspace;
+  label: string;
+  icon: React.ElementType;
+}[] = [
   {
-    id: "dashboard",
-    title: "Dashboard",
+    id: "overview",
+    label: "Mission Overview",
     icon: LayoutDashboard,
   },
   {
-    id: "map",
-    title: "Ocean Map",
-    icon: Map,
+    id: "monitoring",
+    label: "Live Monitoring",
+    icon: Radar,
+  },
+  {
+    id: "incidents",
+    label: "Incident Center",
+    icon: AlertTriangle,
   },
   {
     id: "ai",
-    title: "AI Copilot",
+    label: "AI Decision Support",
     icon: BrainCircuit,
   },
   {
-    id: "analytics",
-    title: "Analytics",
-    icon: ChartColumn,
+    id: "resources",
+    label: "Resource Deployment",
+    icon: Ship,
   },
   {
-    id: "alerts",
-    title: "Alerts",
-    icon: Bell,
+    id: "reports",
+    label: "Government Reports",
+    icon: FileText,
+  },
+  {
+    id: "analytics",
+    label: "Analytics",
+    icon: BarChart3,
+  },
+  {
+    id: "settings",
+    label: "System Settings",
+    icon: Settings,
   },
 ];
 
 export default function Sidebar() {
-  const [active, setActive] = useState("dashboard");
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const { workspace, setWorkspace } = useWorkspace();
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActive(entry.target.id);
-          }
-        });
-      },
-      {
-        threshold: 0.35,
-      }
-    );
+  const { officer, logout } = useAuth();
 
-    menuItems.forEach((item) => {
-      const section = document.getElementById(item.id);
+  return (
+    <aside className="w-80 shrink-0 h-screen sticky top-0 bg-slate-950/95 backdrop-blur-2xl border-r border-cyan-500/10 flex flex-col">
 
-      if (section) observer.observe(section);
-    });
+      {/* ================================================= */}
 
-    return () => observer.disconnect();
-  }, []);
+      {/* LOGO */}
 
-  const scrollTo = (id: string) => {
-    document
-      .getElementById(id)
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      {/* ================================================= */}
 
-    setMobileOpen(false);
-  };
+      <div className="p-8 border-b border-white/10">
 
-  const SidebarContent = () => (
-    <>
-      {/* Logo */}
+        <div className="flex items-center gap-4">
 
-      <div className="flex items-center gap-4 mb-12">
+          <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center">
 
-        <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 flex items-center justify-center animate-glow">
-
-          <Waves
-            className="text-cyan-400"
-            size={30}
-          />
-
-        </div>
-
-        <div>
-
-          <h2 className="text-xl font-black">
-            DeepSea
-          </h2>
-
-          <p className="text-cyan-400 text-sm">
-            Guardian
-          </p>
-
-        </div>
-
-      </div>
-
-      {/* Menu */}
-
-      <nav className="space-y-2 flex-1">
-
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <button
-              key={item.id}
-              onClick={() => scrollTo(item.id)}
-              className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 ${
-                active === item.id
-                  ? "bg-cyan-500/20 border border-cyan-400/20 text-cyan-300"
-                  : "hover:bg-slate-800 text-slate-300"
-              }`}
-            >
-              <Icon size={22} />
-
-              <span className="font-medium">
-                {item.title}
-              </span>
-            </button>
-          );
-        })}
-
-      </nav>
-
-      {/* Status */}
-
-      <div className="glass rounded-3xl p-5 mt-10">
-
-        <div className="flex items-center gap-3">
-
-          <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-
-            <Activity
-              className="text-green-400"
-              size={20}
+            <ShieldCheck
+              className="text-cyan-400"
+              size={34}
             />
 
           </div>
 
           <div>
 
-            <p className="text-slate-400 text-sm">
-              AI Status
+            <h1 className="text-2xl font-black">
+
+              DeepSea Guardian
+
+            </h1>
+
+            <p className="text-cyan-400 text-sm">
+
+              National Command Center
+
             </p>
 
-            <h3 className="text-green-400 font-bold">
-              ONLINE
-            </h3>
-
-          </div>
-
-        </div>
-
-        <div className="mt-5 space-y-2 text-sm">
-
-          <div className="flex justify-between">
-            <span className="text-slate-400">
-              Oceans
-            </span>
-
-            <span>3</span>
-          </div>
-
-          <div className="flex justify-between">
-            <span className="text-slate-400">
-              Sensors
-            </span>
-
-            <span>128</span>
-          </div>
-
-          <div className="flex justify-between">
-            <span className="text-slate-400">
-              Accuracy
-            </span>
-
-            <span className="text-cyan-400">
-              97.2%
-            </span>
           </div>
 
         </div>
 
       </div>
-    </>
-  );
 
-  return (
-    <>
-      {/* Desktop */}
+      {/* ================================================= */}
 
-      <aside className="hidden lg:flex flex-col w-72 min-h-screen glass border-r border-white/10 px-6 py-8 sticky top-0">
-        <SidebarContent />
-      </aside>
+      {/* OFFICER */}
 
-      {/* Mobile Button */}
+      {/* ================================================= */}
 
-      <button
-        onClick={() => setMobileOpen(true)}
-        className="lg:hidden fixed top-5 left-5 z-50 glass p-3 rounded-xl"
-      >
-        <Menu />
-      </button>
+      <div className="px-8 py-6 border-b border-white/10">
 
-      {/* Mobile Drawer */}
+        <div className="flex items-center gap-4">
 
-      <AnimatePresence>
+          <div className="w-14 h-14 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center font-black text-xl">
 
-        {mobileOpen && (
+            {officer?.name?.charAt(0).toUpperCase() || "O"}
 
-          <>
-            <motion.div
-              className="fixed inset-0 bg-black/60 z-40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMobileOpen(false)}
-            />
+          </div>
 
-            <motion.aside
-              initial={{ x: -320 }}
-              animate={{ x: 0 }}
-              exit={{ x: -320 }}
-              transition={{ duration: 0.3 }}
-              className="fixed left-0 top-0 h-screen w-72 glass p-6 z-50 flex flex-col"
-            >
+          <div>
 
-              <button
-                className="self-end mb-6"
-                onClick={() => setMobileOpen(false)}
+            <h2 className="font-bold">
+
+              {officer?.name || "Officer"}
+
+            </h2>
+
+            <p className="text-slate-400 text-sm">
+
+              {officer?.role || "Marine Command Officer"}
+
+            </p>
+
+            <p className="text-cyan-400 text-xs mt-1">
+
+              {officer?.agency || "Indian Coast Guard"}
+
+            </p>
+
+          </div>
+
+        </div>
+
+        <div className="mt-5 flex items-center gap-3">
+
+          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+
+          <span className="text-green-400 text-sm">
+
+            Secure Session Active
+
+          </span>
+
+        </div>
+
+      </div>
+
+      {/* ================================================= */}
+
+      {/* MENU */}
+
+      {/* ================================================= */}
+
+      <div className="flex-1 overflow-y-auto px-5 py-6">
+
+        <div className="space-y-2">
+
+          {menu.map((item) => {
+            const Icon = item.icon;
+
+            const active = workspace === item.id;
+
+            return (
+              <motion.button
+                key={item.id}
+                whileHover={{
+                  x: 6,
+                }}
+                whileTap={{
+                  scale: 0.98,
+                }}
+                onClick={() => setWorkspace(item.id)}
+                className={`
+                  relative
+                  w-full
+                  rounded-2xl
+                  px-5
+                  py-4
+                  flex
+                  items-center
+                  gap-4
+                  transition-all
+
+                  ${
+                    active
+                      ? "bg-cyan-500 text-slate-950 shadow-xl shadow-cyan-500/30"
+                      : "text-slate-300 hover:bg-white/5"
+                  }
+                `}
               >
-                <X />
-              </button>
 
-              <SidebarContent />
+                <Icon size={22} />
 
-            </motion.aside>
+                <span className="font-semibold">
 
-          </>
+                  {item.label}
 
-        )}
+                </span>
 
-      </AnimatePresence>
-    </>
+              </motion.button>
+            );
+          })}
+
+        </div>
+
+      </div>
+
+      {/* ================================================= */}
+
+      {/* FOOTER */}
+
+      {/* ================================================= */}
+
+      <div className="border-t border-white/10 p-6">
+
+        <div className="rounded-2xl bg-slate-900 border border-white/10 p-5 mb-5">
+
+          <p className="text-slate-500 text-xs">
+
+            Security Clearance
+
+          </p>
+
+          <h3 className="font-bold text-cyan-400 mt-2">
+
+            {officer?.clearance || "LEVEL V"}
+
+          </h3>
+
+        </div>
+
+        <button
+          onClick={logout}
+          className="w-full rounded-2xl border border-red-500/20 hover:border-red-400 hover:bg-red-500/10 transition-all py-4 flex items-center justify-center gap-3 text-red-400"
+        >
+
+          <LogOut size={18} />
+
+          Logout
+
+        </button>
+
+      </div>
+
+    </aside>
   );
 }

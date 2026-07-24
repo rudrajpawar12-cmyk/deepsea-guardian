@@ -1,17 +1,17 @@
-import Navbar from "../components/layout/Navbar";
-import Hero from "../components/sections/Hero";
-import Problem from "../components/sections/Problem";
-import Features from "../components/sections/Features";
-import Footer from "../components/sections/Footer";
+import AnimatedBackground from "../components/landing/AnimatedBackground";
+import Hero from "../components/landing/Hero";
+import AgencyStatus from "../components/landing/AgencyStatus";
 
 export default function Home() {
   return (
-    <>
-      <Navbar />
+    <main className="relative h-screen overflow-hidden bg-[#020617]">
+
+      <AnimatedBackground />
+
       <Hero />
-      <Problem />
-      <Features />
-      <Footer />
-    </>
+
+      <AgencyStatus />
+
+    </main>
   );
 }
